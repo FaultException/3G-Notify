@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen android:key="top" xmlns:android="http://schemas.android.com/apk/res/android">
+	
+
+
+
+
+
+
+
+
+
+
+<CheckBoxPreference android:key="enabled" android:summaryOff="Check to enable 3G Notify" android:summaryOn="Uncheck to disable 3G Notify" android:title="Enabled?" android:defaultValue="true"></CheckBoxPreference><Preference android:key="reset_pref" android:title="Reset notification settings"></Preference><PreferenceCategory android:key="3g_cat" android:title="3G/4G data"><PreferenceScreen android:summary="Notification" android:key="3g_acquired" android:title="Found settings"><RingtonePreference android:ringtoneType="ringtone|notification|alarm|all" android:showSilent="true" android:key="3g_acquired_ringtone" android:title="Ringtone"></RingtonePreference><ListPreference android:dialogTitle="Pattern" android:key="3g_acquired_vibrate" android:entries="@array/vibration_keys" android:entryValues="@array/vibration_values" android:defaultValue="none" android:title="Vibrate"></ListPreference>
+
+</PreferenceScreen><PreferenceScreen android:summary="Notification" android:key="3g_lost" android:title="Lost settings"><RingtonePreference android:key="3g_lost_ringtone" android:title="Ringtone"></RingtonePreference><ListPreference android:key="3g_lost_vibrate" android:entryValues="@array/vibration_values" android:entries="@array/vibration_keys" android:dialogTitle="Pattern" android:defaultValue="none" android:title="Vibrate"></ListPreference></PreferenceScreen>
+
+
+
+
+
+</PreferenceCategory><PreferenceCategory android:key="wifi_cat" android:title="Wifi access point"><PreferenceScreen android:key="wifi_acquired" android:summary="Notification" android:title="Connected settings"><RingtonePreference android:showSilent="true" android:ringtoneType="ringtone|notification|alarm|all" android:key="wifi_acquired_ringtone" android:title="Ringtone"></RingtonePreference><ListPreference android:entryValues="@array/vibration_values" android:entries="@array/vibration_keys" android:dialogTitle="Pattern" android:key="wifi_acquired_vibrate" android:defaultValue="none" android:title="Vibrate"></ListPreference></PreferenceScreen><PreferenceScreen android:key="wifi_lost" android:summary="Notification" android:title="Disconnected settings"><RingtonePreference android:key="wifi_lost_ringtone" android:title="Ringtone"></RingtonePreference><ListPreference android:entryValues="@array/vibration_values" android:entries="@array/vibration_keys" android:dialogTitle="Pattern" android:key="wifi_lost_vibrate" android:defaultValue="none" android:title="Vibrate"></ListPreference></PreferenceScreen>
+
+
+
+
+
+
+
+</PreferenceCategory><PreferenceCategory android:key="roaming_cat" android:title="Roaming"><PreferenceScreen android:key="roaming_start" android:summary="Notification" android:title="Started settings"><RingtonePreference android:key="roaming_ringtone" android:title="Ringtone"></RingtonePreference><ListPreference android:dialogTitle="Pattern" android:entryValues="@array/vibration_values" android:entries="@array/vibration_keys" android:key="roaming_vibrate" android:defaultValue="none" android:title="Vibrate"></ListPreference></PreferenceScreen><PreferenceScreen android:key="roaming_stop" android:summary="Notification" android:title="Stopped settings"><RingtonePreference android:key="not_roaming_ringtone" android:title="Ringtone"></RingtonePreference><ListPreference android:entryValues="@array/vibration_values" android:entries="@array/vibration_keys" android:dialogTitle="Pattern" android:key="not_roaming_vibrate" android:defaultValue="none" android:title="Vibrate"></ListPreference></PreferenceScreen>
+
+
+
+
+
+
+</PreferenceCategory>
+
+<PreferenceCategory android:title="About" android:key="about_cat"><Preference android:key="contact_pref" android:summary="FaultExceptionApps@gmail.com" android:title="Support"></Preference>
+<Preference android:key="version_pref" android:summary="by FaultException" android:title="3GN version 2.21"></Preference>
+
+<Preference android:key="blog_pref" android:title="FaultException blog" android:summary="faultexception.wordpress.com"></Preference>
+</PreferenceCategory>
+
+
+
+</PreferenceScreen>

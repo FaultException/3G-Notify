@@ -1,0 +1,24 @@
+
+    <resources>
+        <string-array name="vibration_values">
+            <item>none</item>
+            <item>.</item>
+            <item>-</item>
+            <item>.-.-</item>
+            <item>-.-.</item>
+            <item>..-</item>
+            <item>..</item>
+            <item>--</item>
+        </string-array>
+        <string-array name="vibration_keys">
+            <item>None</item>
+            <item>Short</item>
+            <item>Long</item>
+            <item>Alternative</item>
+            <item>Reversed Alt.</item>
+            <item>Leading</item>
+            <item>Taps</item>
+            <item>Train</item>
+            
+        </string-array>
+    </resources>
