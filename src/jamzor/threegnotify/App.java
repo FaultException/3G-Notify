@@ -14,7 +14,7 @@ public class App extends Application {
 	public ICheckerService mCheckerService;
 	
 	/**
-	 * Wallpaper Service Handler
+	 * Service Handler
 	 */
 	private ServiceConnection mServiceConnection = new ServiceConnection() {
 		@Override
