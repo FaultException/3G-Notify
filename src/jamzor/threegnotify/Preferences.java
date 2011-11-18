@@ -81,7 +81,7 @@ public class Preferences extends PreferenceActivity {
         blogBtn.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://faultexception.wordpress.com"));
+				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://faultexception.com"));
 				Preferences.this.startActivity(intent);
 	    		
 				return true;
