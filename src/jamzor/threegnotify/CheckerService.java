@@ -10,19 +10,23 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
-import android.net.wifi.WifiManager;
 import android.os.IBinder;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 
 public class CheckerService extends Service {
-	private boolean has3G = false;
-	private boolean hasWifi = false;
-	private boolean isRoaming = false;
-	private Timer timer = null;
+	// State:
+	private boolean mHas3G = false;
+	private boolean mHasWifi = false;
+	private boolean mIsRoaming = false;
+	
+	private Timer mTimer = null;
 	private static final int DELAY = 15000;
-	private static boolean isInitialized = false;
+	private static boolean mIsInitialized = false;
+	private Context mContext;
 	
 	private ICheckerService.Stub mStub = new ICheckerService.Stub() {
 		public void enable() {
@@ -39,53 +43,62 @@ public class CheckerService extends Service {
 	};
 
 	protected void enable() {
-		if(timer == null) {
+		if(mTimer == null) {
 			/*
-			 * Refresh our records, so if someone turns it off,
-			 * then back on later it won't freak out.
+			 * Prevent a "shock" from being re-enabling after a disable by
+			 * updating our cache of the phone state without notifying.
 			 */
-			check(false);
+			update(false);
 			
-			timer = new Timer();
-			timer.schedule(new TimerTask() {
+			mTimer = new Timer();
+			mTimer.schedule(new TimerTask() {
 				@Override
 				public void run() {
-					check(true);
+					update(true);
 				}
 			}, DELAY, DELAY);
 		}
 	}
 	
 	protected void disable() {
-		if(timer != null) {
-			timer.cancel();
-			timer = null;
+		if(mTimer != null) {
+			mTimer.cancel();
+			mTimer = null;
 		}
 	}
 	
 	@Override
 	public IBinder onBind(Intent arg0) {
-		// TODO Auto-generated method stub
 		return mStub;
 	}
 
 	@Override
 	public void onStart(Intent intent, int startId) {
-		if(isInitialized) return;
-		isInitialized = true;
+		if(mIsInitialized) return;
+		mIsInitialized = true;
+		
+		mContext = getApplicationContext();
 		
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		if(prefs.getBoolean("enabled", true))
 			enable();
 	}
 	
-	protected void check(boolean notify) {
-		TelephonyManager tm = (TelephonyManager) getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
-		ConnectivityManager connectivity = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+	protected void update(boolean notify) {
+		// Airplane Mode means we don't need to update at all.
+		boolean airplaneMode = Settings.System.getInt(mContext.getContentResolver(),
+									Settings.System.AIRPLANE_MODE_ON, 0) != 0;
+		if(airplaneMode) {
+			Log.d("3GN", "Skipping, airplane mode is active.");
+			return;
+		}
 		
-		boolean had3G = has3G;
-		boolean hadWifi = hasWifi;
-		boolean wasRoaming = isRoaming;
+		TelephonyManager tm = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+		ConnectivityManager connectivity = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+		
+		boolean had3G = mHas3G;
+		boolean hadWifi = mHasWifi;
+		boolean wasRoaming = mIsRoaming;
 		
 		int netType = tm.getNetworkType();
 		if(netType == TelephonyManager.NETWORK_TYPE_HSPA ||
@@ -95,44 +108,44 @@ public class CheckerService extends Service {
 		   netType == TelephonyManager.NETWORK_TYPE_EVDO_0 ||
 		   netType == TelephonyManager.NETWORK_TYPE_EVDO_A ||
 		   netType == TelephonyManager.NETWORK_TYPE_UMTS) {
-			has3G = true;
+			mHas3G = true;
 		} else {
-			has3G = false;
+			mHas3G = false;
 		}
 		
 		if(connectivity.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected()) {
-			hasWifi = true;
+			mHasWifi = true;
 		} else {
-			hasWifi = false;
+			mHasWifi = false;
 		}
 		
 		if(tm.isNetworkRoaming()) {
-			isRoaming = true;
+			mIsRoaming = true;
 		} else {
-			isRoaming = false;
+			mIsRoaming = false;
 		}
 		
 		if(notify) {
-			if(has3G && !had3G) {
+			if(mHas3G && !had3G) {
 				playRingtone("3g_acquired_ringtone");
 				vibrate("3g_acquired_vibrate");
-			} else if(!has3G && had3G) {
+			} else if(!mHas3G && had3G) {
 				playRingtone("3g_lost_ringtone");
 				vibrate("3g_lost_vibrate");
 			}
 			
-			if(hasWifi && !hadWifi) {
+			if(mHasWifi && !hadWifi) {
 				playRingtone("wifi_acquired_ringtone");
 				vibrate("wifi_acquired_vibrate");
-			} else if(!hasWifi && hadWifi) {
+			} else if(!mHasWifi && hadWifi) {
 				playRingtone("wifi_lost_ringtone");
 				vibrate("wifi_lost_vibrate");
 			}
 			
-			if(isRoaming && !wasRoaming) {
+			if(mIsRoaming && !wasRoaming) {
 				playRingtone("roaming_ringtone");
 				vibrate("roaming_vibrate");
-			} else if(!isRoaming && wasRoaming) {
+			} else if(!mIsRoaming && wasRoaming) {
 				playRingtone("not_roaming_ringtone");
 				vibrate("not_roaming_vibrate");
 			}
@@ -140,11 +153,11 @@ public class CheckerService extends Service {
 	}
 	
 	private void playRingtone(String pref) {
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
 		String ringtoneURL = prefs.getString(pref, "");
 		if(ringtoneURL.equals("")) return;
 		
-		Ringtone tone = RingtoneManager.getRingtone(getApplicationContext(), Uri.parse(ringtoneURL));
+		Ringtone tone = RingtoneManager.getRingtone(mContext, Uri.parse(ringtoneURL));
 		tone.play();
 	}
 	
@@ -153,8 +166,8 @@ public class CheckerService extends Service {
 		final long LONG_DURATION = 750;
 		final long INTERVAL = 250;
 		
-		Vibrator vb = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		Vibrator vb = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
 		String value = prefs.getString(pref, "none");
 		if(value.equals("none")) return;
 		
