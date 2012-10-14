@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: D:\\ecl_workspace\\3G Notify\\src\\jamzor\\threegnotify\\ICheckerService.aidl
+ * Original file: D:\\gh_workspace\\3G-Notify\\src\\jamzor\\threegnotify\\ICheckerService.aidl
  */
 package jamzor.threegnotify;
 public interface ICheckerService extends android.os.IInterface
