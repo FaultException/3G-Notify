@@ -38,9 +38,6 @@
 
 <PreferenceCategory android:title="About" android:key="about_cat"><Preference android:key="contact_pref" android:summary="FaultExceptionApps@gmail.com or tweet @FaultException" android:title="Support"></Preference>
 <Preference android:key="version_pref" android:summary="by FaultException" android:title="3GN version 2.3"></Preference>
-
-<Preference android:key="blog_pref" android:title="FaultException.com"></Preference>
-<Preference android:title="\@FaultException" android:key="twitter_pref"/>
 </PreferenceCategory>
 
 
